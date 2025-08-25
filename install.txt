@@ -1,0 +1,2 @@
+cd /opt/boost
+./build-android.sh /opt/android-sdk/ndk/23.1.7779620 --arch=armeabi-v7a,arm64-v8a
