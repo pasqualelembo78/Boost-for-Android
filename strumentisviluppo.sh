@@ -10,19 +10,17 @@ CMDLINE_TOOLS_VERSION="9123335_latest"
 NDK_VERSION="25.2.9519653"
 PLATFORM_VERSION="33"
 BUILD_TOOLS_VERSION="33.0.2"
-EMULATOR_IMAGE="system-images;android-33;google_apis;x86_64"
 
 # Creazione cartelle
 mkdir -p "$ANDROID_HOME/cmdline-tools"
 mkdir -p "$ANDROID_HOME/ndk"
 mkdir -p "$ANDROID_HOME/platform-tools"
-mkdir -p "$ANDROID_HOME/emulator"
 
 # =========================
 # Aggiorna sistema e installa dipendenze
 # =========================
 sudo apt update
-sudo apt install -y unzip curl wget openjdk-17-jdk git build-essential qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils cmake ninja-build
+sudo apt install -y unzip curl wget openjdk-17-jdk git build-essential cmake ninja-build
 
 # =========================
 # Scarica e installa cmdline-tools
@@ -37,10 +35,10 @@ rm cmdline-tools.zip
 # Aggiungi variabili d'ambiente
 # =========================
 grep -qxF "export ANDROID_HOME=$ANDROID_HOME" ~/.bashrc || echo "export ANDROID_HOME=$ANDROID_HOME" >> ~/.bashrc
-grep -qxF "export PATH=\$ANDROID_HOME/cmdline-tools/latest/bin:\$ANDROID_HOME/platform-tools:\$ANDROID_HOME/emulator:\$PATH" ~/.bashrc || \
-    echo "export PATH=\$ANDROID_HOME/cmdline-tools/latest/bin:\$ANDROID_HOME/platform-tools:\$ANDROID_HOME/emulator:\$PATH" >> ~/.bashrc
+grep -qxF "export PATH=\$ANDROID_HOME/cmdline-tools/latest/bin:\$ANDROID_HOME/platform-tools:\$PATH" ~/.bashrc || \
+    echo "export PATH=\$ANDROID_HOME/cmdline-tools/latest/bin:\$ANDROID_HOME/platform-tools:\$PATH" >> ~/.bashrc
 export ANDROID_HOME="$ANDROID_HOME"
-export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
+export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
 
 # =========================
 # Accetta licenze SDK
@@ -55,21 +53,7 @@ sdkmanager \
     "platforms;android-$PLATFORM_VERSION" \
     "build-tools;$BUILD_TOOLS_VERSION" \
     "ndk;$NDK_VERSION" \
-    "cmake;3.22.1" \
-  #  "lldb;13.1" \
-    "emulator" \
-    "$EMULATOR_IMAGE"
-
-# =========================
-# Installa Gradle
-# =========================
-GRADLE_VERSION="8.4.1"
-wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -O /tmp/gradle.zip
-sudo unzip -d /opt/gradle /tmp/gradle.zip
-rm /tmp/gradle.zip
-grep -qxF "export PATH=/opt/gradle/gradle-${GRADLE_VERSION}/bin:\$PATH" ~/.bashrc || \
-    echo "export PATH=/opt/gradle/gradle-${GRADLE_VERSION}/bin:\$PATH" >> ~/.bashrc
-export PATH="/opt/gradle/gradle-${GRADLE_VERSION}/bin:$PATH"
+    "cmake;3.22.1"
 
 # =========================
 # Verifica installazione
@@ -78,7 +62,6 @@ echo "========================"
 echo "Android SDK installato in: $ANDROID_HOME"
 echo "NDK versione: $NDK_VERSION"
 echo "Build-tools: $BUILD_TOOLS_VERSION"
-echo "Emulator e immagini installati"
-echo "Gradle versione: $(gradle -v | grep Gradle)"
+echo "SDK principale e NDK installati"
 echo "========================"
 echo "Ora esegui: source ~/.bashrc per aggiornare le variabili d'ambiente"
