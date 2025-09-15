@@ -1,3 +1,6 @@
+apt update
+apt install -y bzip2 build-essential python3 wget curl
+
 ./build-android.sh \
   $ANDROID_HOME/ndk/25.2.9519653 \
   --arch=arm64-v8a \
