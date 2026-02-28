@@ -175,11 +175,11 @@ do_layout () {
 	LAYOUT=$1;
 }
 
+# FIX: removed the "if [ -d $1 ]" guard so PREFIX is always set,
+# even if the directory does not yet exist at parse time.
 register_option "--prefix=<path>" do_prefix "Prefix to be used when installing libraries and includes."
 do_prefix () {
-    if [ -d $1 ]; then
-        PREFIX=$1;
-    fi
+    PREFIX=$1
 }
 
 ARCHLIST=
@@ -389,11 +389,6 @@ case "$NDK_RN" in
 		TOOLSET=gcc-androidR8e
 		;;
 	"9 (64-bit)"|"9b (64-bit)"|"9c (64-bit)"|"9d (64-bit)")
-		TOOLCHAIN=${TOOLCHAIN:-arm-linux-androideabi-4.6}
-		CXXPATH=$AndroidNDKRoot/toolchains/${TOOLCHAIN}/prebuilt/${PlatformOS}-x86_64/bin/arm-linux-androideabi-g++
-		TOOLSET=gcc-androidR8e
-		;;
-	"10 (64-bit)"|"10b (64-bit)"|"10c (64-bit)"|"10d (64-bit)")
 		TOOLCHAIN=${TOOLCHAIN:-arm-linux-androideabi-4.6}
 		CXXPATH=$AndroidNDKRoot/toolchains/${TOOLCHAIN}/prebuilt/${PlatformOS}-x86_64/bin/arm-linux-androideabi-g++
 		TOOLSET=gcc-androidR8e
@@ -685,11 +680,14 @@ echo "Building boost for android for $ARCH"
 
 dump "Done!"
 
+# FIX: copy directly into $PREFIX/lib and $PREFIX/include (not into $PREFIX/$ARCH/)
+# so that CMake finds headers at $PREFIX/include/boost/version.hpp
+# and libraries at $PREFIX/lib/libboost_*.a
 if [ $PREFIX ]; then
     echo "Prefix set, copying files to $PREFIX"
-    mkdir -p $PREFIX/$ARCH
-    cp -r $PROGDIR/$BUILD_DIR/out/$ARCH/lib $PREFIX/$ARCH/
-    cp -r $PROGDIR/$BUILD_DIR/out/$ARCH/include $PREFIX/$ARCH/
+    mkdir -p $PREFIX/lib $PREFIX/include
+    cp -r $PROGDIR/$BUILD_DIR/out/$ARCH/lib/* $PREFIX/lib/
+    cp -r $PROGDIR/$BUILD_DIR/out/$ARCH/include/boost $PREFIX/include/
 fi
 
 done # for ARCH in $ARCHLIST
